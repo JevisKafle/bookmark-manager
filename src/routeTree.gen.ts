@@ -9,17 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PagesRecentRouteImport } from './routes/pages/recent'
 import { Route as PagesFavoriteRouteImport } from './routes/pages/favorite'
 import { Route as PagesArchiveRouteImport } from './routes/pages/archive'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,14 +37,12 @@ const PagesArchiveRoute = PagesArchiveRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/pages/archive': typeof PagesArchiveRoute
   '/pages/favorite': typeof PagesFavoriteRoute
   '/pages/recent': typeof PagesRecentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/pages/archive': typeof PagesArchiveRoute
   '/pages/favorite': typeof PagesFavoriteRoute
   '/pages/recent': typeof PagesRecentRoute
@@ -58,33 +50,20 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/pages/archive': typeof PagesArchiveRoute
   '/pages/favorite': typeof PagesFavoriteRoute
   '/pages/recent': typeof PagesRecentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/about'
-    | '/pages/archive'
-    | '/pages/favorite'
-    | '/pages/recent'
+  fullPaths: '/' | '/pages/archive' | '/pages/favorite' | '/pages/recent'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/pages/archive' | '/pages/favorite' | '/pages/recent'
-  id:
-    | '__root__'
-    | '/'
-    | '/about'
-    | '/pages/archive'
-    | '/pages/favorite'
-    | '/pages/recent'
+  to: '/' | '/pages/archive' | '/pages/favorite' | '/pages/recent'
+  id: '__root__' | '/' | '/pages/archive' | '/pages/favorite' | '/pages/recent'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
   PagesArchiveRoute: typeof PagesArchiveRoute
   PagesFavoriteRoute: typeof PagesFavoriteRoute
   PagesRecentRoute: typeof PagesRecentRoute
@@ -92,13 +71,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -132,7 +104,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
   PagesArchiveRoute: PagesArchiveRoute,
   PagesFavoriteRoute: PagesFavoriteRoute,
   PagesRecentRoute: PagesRecentRoute,

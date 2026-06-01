@@ -41,7 +41,7 @@ export const Sidebar = () => {
 	});
 
 	return (
-		<aside className="bg-black flex flex-col text-white w-60 h-screen ">
+		<aside className="bg-black flex flex-col text-white w-60 h-screen border">
 			<h1 className="mx-4 mt-4 text-2xl font-bold mb-4 text-white">
 				Bookmarks Vault
 			</h1>

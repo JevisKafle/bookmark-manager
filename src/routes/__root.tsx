@@ -9,6 +9,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
 import { Sidebar } from "#/components/Sidebar.tsx";
+import { Header } from "#/components/Header.tsx";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -53,11 +54,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]">
 				<main className="flex h-screen">
-          <Sidebar/>
-          <div className="flex-1 overflow-y-auto">
-          {children}
-          </div>
-          </main>
+					<Sidebar />
+					<div className="flex-1 overflow-y-auto">
+						<Header />
+						{children}
+					</div>
+				</main>
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

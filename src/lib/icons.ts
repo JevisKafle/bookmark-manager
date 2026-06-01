@@ -4,6 +4,7 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import GridViewIcon from '@mui/icons-material/GridView';
+import SearchIcon from '@mui/icons-material/Search';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 export {
@@ -13,5 +14,6 @@ export {
     AutoStoriesIcon,
     StarBorderIcon,
     FormatListBulletedIcon,
-    GridViewIcon
+    GridViewIcon,
+    SearchIcon
 } 
