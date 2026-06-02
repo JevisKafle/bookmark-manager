@@ -1,5 +1,5 @@
 import { SearchIcon } from "./../lib/icons";
-import { Button } from "./ui/button";
+import { AddLinkModal } from "./AddLink";
 import { Input } from "./ui/input";
 
 export const Header = () => {
@@ -13,7 +13,7 @@ export const Header = () => {
 					className="w-90 bg-gray-800 pl-12 pb-2 "
 				/>
 			</div>
-			<Button className="bg-[hsl(239,84%,67%)] hover:bg-[hsl(239,88%,63%)] cursor-pointer"> + Add Link</Button>
+			<AddLinkModal/>
 		</header>
 	);
 };
