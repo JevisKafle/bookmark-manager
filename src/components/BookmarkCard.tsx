@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { BookmarkCardProps } from "../../type";
-import {StarBorderIcon, StarIcon} from "./../lib/icons"
+import { StarBorderIcon, StarIcon } from "./../lib/icons";
 
 export const BookmarkCard = ({
 	title,
@@ -15,7 +15,7 @@ export const BookmarkCard = ({
 		<div className="group bg-[#131313] border border-white/5 rounded-xl overflow-hidden hover:border-[hsl(239,84%,67%)]/40 hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] transition-all duration-200 cursor-pointer flex flex-col">
 			{/* Bookmark thumbnail */}
 			<div className="h-36 bg-[#0d0d0d] relative overflow-hidden flex items-center justify-center">
-				<div className="abosulte inset-0 bg-linear-to-br from-white/3 to-transparent ">
+				<div className="absolutee inset-0 bg-linear-to-br from-white/3 to-transparent ">
 					<img
 						src={favicon_url}
 						alt={title}
@@ -32,9 +32,9 @@ export const BookmarkCard = ({
 					/>
 					{/* Favorite button */}
 					<button
-                        type="button"
+						type="button"
 						onClick={(e) => {
-							e.stopPropagation(); // prevent card click
+							e.stopPropagation(); 
 							setIsFavorite((prev) => !prev);
 						}}
 						className="absolute top-2 right-2 p-1 rounded-md bg-black/40 hover:bg-black/70 transition-all duration-200 cursor-pointer"
