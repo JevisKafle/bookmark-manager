@@ -28,13 +28,15 @@ export function AddLinkModal() {
 		);
 	};
 
-    const handleAddNewTag = () => {
-        if(newTag.trim() && !allTags.includes(newTag.trim())){
-            const tag = newTag.trim()
-            setAllTags(prev => [...prev,tag])
-            setSelectedTags(prev => [...prev,tag])
-        }
-    }
+	const handleAddNewTag = () => {
+		if (newTag.trim() && !allTags.includes(newTag.trim())) {
+			const tag = newTag.trim();
+			setAllTags((prev) => [...prev, tag]);
+			setSelectedTags((prev) => [...prev, tag]);
+		}
+		setNewTag("");
+		setShowNewTag(false);
+	};
 
 	const handleSubmit = () => {
 		console.log({ url, tags: selectedTags });
@@ -95,7 +97,13 @@ export function AddLinkModal() {
 										autoFocus
 										value={newTag}
 										onChange={(e) => setNewTag(e.target.value)}
-										onKeyDown={(e) => e.key === "Enter" && handleAddNewTag()}
+										onKeyDown={(e) => {
+											if (e.key === "Enter") handleAddNewTag();
+											if (e.key === "Escape") {
+												setNewTag("");
+												setShowNewTag(false);
+											}
+										}}
 										onBlur={handleAddNewTag}
 										placeholder="Tag name..."
 										className="px-3 py-1 rounded-full text-sm border border-zinc-500 bg-transparent text-white outline-none w-24"

@@ -5,7 +5,9 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import GridViewIcon from '@mui/icons-material/GridView';
 import SearchIcon from '@mui/icons-material/Search';
+import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+
 
 export {
     BookmarkIcon,
@@ -15,5 +17,6 @@ export {
     StarBorderIcon,
     FormatListBulletedIcon,
     GridViewIcon,
-    SearchIcon
+    SearchIcon,
+    StarIcon,
 } 
