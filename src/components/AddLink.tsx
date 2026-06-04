@@ -52,7 +52,7 @@ export function AddLinkModal() {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
-					<Button className="bg-[hsl(239,84%,67%)] hover:bg-[hsl(239,88%,63%)] cursor-pointer">
+					<Button className="bg-[hsl(239,84%,67%)] hover:bg-[hsl(239,88%,63%)] cursor-pointer font-bold">
 						+ Add Link
 					</Button>
 				</DialogTrigger>

@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { desc } from "drizzle-orm";
 import { db } from "@/db";
 import { links } from "@/db/schema";
 
@@ -31,3 +32,8 @@ export const addBookmark = createServerFn({ method: "POST" })
 			.returning();
         return newLink
 	});
+
+export const getBookmark = createServerFn({ method: "GET"})
+    .handler( async () => {
+        return await db.select().from(links).orderBy(desc(links.createdAt))
+    })
