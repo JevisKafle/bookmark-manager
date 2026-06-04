@@ -1,5 +1,8 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
+import { Toaster } from 'sonner'
+
+// inside your body:
 import {
 	createRootRouteWithContext,
 	HeadContent,
@@ -58,6 +61,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 					<div className="flex-1 overflow-y-auto">
 						<Header />
 						{children}
+						<Toaster richColors position="top-center" />
 					</div>
 				</main>
 				<TanStackDevtools

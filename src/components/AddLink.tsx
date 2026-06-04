@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from 'sonner'
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { addBookmark } from "@/lib/actions/bookmark"
 
 const DEFAULT_TAGS = ["Reading", "Report", "Design", "Tools", "Videos"];
 
@@ -21,6 +23,7 @@ export function AddLinkModal() {
 	const [allTags, setAllTags] = useState(DEFAULT_TAGS);
 	const [showNewTag, setShowNewTag] = useState(false);
 	const [newTag, setNewTag] = useState("");
+	const [open,setOpen] = useState(false)
 
 	const toggleTag = (tag: string) => {
 		setSelectedTags((prev) =>
@@ -38,13 +41,16 @@ export function AddLinkModal() {
 		setShowNewTag(false);
 	};
 
-	const handleSubmit = () => {
-		console.log({ url, tags: selectedTags });
+	const handleSubmit = async () => {
+		if(!url.trim()) return
+		await addBookmark({data: {url}})
+		toast.success("Bookmark added!")
+		setUrl("")
+		setOpen(false)
 	};
 
 	return (
-		<Dialog>
-			<form>
+		<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
 					<Button className="bg-[hsl(239,84%,67%)] hover:bg-[hsl(239,88%,63%)] cursor-pointer">
 						+ Add Link
@@ -111,7 +117,7 @@ export function AddLinkModal() {
 								) : (
 									<button
 										type="button"
-										onClick={() => setShowNewTag(true)}
+										onClick={() => setShowNewTag(true) }
 										className="px-3 py-1 rounded-full text-sm border border-dashed border-zinc-600 text-zinc-400 hover:border-zinc-400 cursor-pointer transition"
 									>
 										+ New
@@ -123,7 +129,7 @@ export function AddLinkModal() {
 
 					<DialogFooter>
 						<DialogClose asChild>
-							<Button variant="outline">Cancel</Button>
+							<Button variant="outline" className="cursor-pointer">Cancel</Button>
 						</DialogClose>
 						<Button
 							onClick={handleSubmit}
@@ -133,7 +139,6 @@ export function AddLinkModal() {
 						</Button>
 					</DialogFooter>
 				</DialogContent>
-			</form>
 		</Dialog>
 	);
 }
