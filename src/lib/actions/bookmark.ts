@@ -33,6 +33,7 @@ export const addBookmark = createServerFn({ method: "POST" })
         return newLink
 	});
 
+    
 export const getBookmark = createServerFn({ method: "GET"})
     .handler( async () => {
         return await db.select().from(links).orderBy(desc(links.createdAt))
