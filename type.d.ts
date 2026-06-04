@@ -11,7 +11,7 @@ export type BookmarkItems = {
         url: string,
         domain: string,
         description: string,
-        favicon_url: 'https://www.google.com/s2/favicons?domain=tailwindcss.com&sz=64',
+        favicon_url: string,
         tags: string[],
         created_at: string,
 }
