@@ -1,4 +1,4 @@
-import { integer, pgTable, primaryKey, serial, text, timestamp} from 'drizzle-orm/pg-core'
+import { boolean, integer, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core'
 
 export const links = pgTable('links', {
   id: serial('id').primaryKey(),
@@ -7,6 +7,7 @@ export const links = pgTable('links', {
   description: text('description'),
   favicon_url: text('favicon_url'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  isFavorite: boolean('is_Favorite').default(false).notNull()
 })
 
 export const tags = pgTable('tags', {

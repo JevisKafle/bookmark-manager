@@ -17,7 +17,7 @@ export type BookmarkItems = {
 }
 
 export type BookmarkItem = {
-  id: string
+  id: number
   title: string
   url: string
   domain: string
@@ -25,6 +25,7 @@ export type BookmarkItem = {
   favicon_url: string
   tags: string[]
   created_at: string
+  isFavorite: boolean
 }
 
-export type BookmarkCardProps = Omit<BookmarkItem, 'id' | 'created_at'>
+export type BookmarkCardProps = Omit<BookmarkItem, 'created_at'>

@@ -1,15 +1,27 @@
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import  { useState } from "react";
+import { toggleFavorite } from "@/lib/actions/bookmark";
 import type { BookmarkCardProps } from "../../type";
 import { StarBorderIcon, StarIcon } from "./../lib/icons";
 
 export const BookmarkCard = ({
+	id,
 	title,
 	domain,
 	description,
 	favicon_url,
 	tags,
+	isFavorite: initialFavorite,
 }: BookmarkCardProps) => {
-	const [isFavorite, setIsFavorite] = useState(false);
+	const [isFavorite, setIsFavorite] = useState(initialFavorite);
+	const queryClient = useQueryClient();
+
+	const handleFavorite = async (e:React.MouseEvent) => {
+		e.stopPropagation();
+		setIsFavorite((prev) => !prev);
+		await toggleFavorite({data : {id, isFavorite}})
+		queryClient.invalidateQueries({queryKey: ['bookmarks']})
+	};
 
 	return (
 		<div className="group bg-[#131313] p-2 rounded-xl flex flex-col hover:border-[hsl(239,84%,67%)]/40 hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] transition-all duration-200 cursor-pointer">
@@ -31,10 +43,7 @@ export const BookmarkCard = ({
 					{/* Favorite button */}
 					<button
 						type="button"
-						onClick={(e) => {
-							e.stopPropagation();
-							setIsFavorite((prev) => !prev);
-						}}
+						onClick={handleFavorite}
 						className="absolute top-2 right-2 p-1 rounded-md bg-black/40 hover:bg-black/70 transition-all duration-200 cursor-pointer"
 					>
 						{isFavorite ? (
@@ -48,13 +57,17 @@ export const BookmarkCard = ({
 			{/* Content below image */}
 			<div className="flex flex-col gap-1.5 p-3">
 				<div className="flex items-center gap-1.5">
-					<img src={favicon_url} alt="" className="w-4 h-4 rounded-sm shrink-0" />
-					<h3 className="text-white ">
-						{title}
-					</h3>
+					<img
+						src={favicon_url}
+						alt=""
+						className="w-4 h-4 rounded-sm shrink-0"
+					/>
+					<h3 className="text-white ">{title}</h3>
 				</div>
 				<div className="text-zinc-500 text-sm">{domain}</div>
-				<p className="truncate text-zinc-500 leading-tight text-sm">{description}</p>
+				<p className="truncate text-zinc-500 leading-tight text-sm">
+					{description}
+				</p>
 				<div>
 					{tags.map((tag) => (
 						<span
