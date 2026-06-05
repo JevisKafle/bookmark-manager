@@ -6,7 +6,7 @@ import {
 	BookmarkIcon,
 	StarBorderIcon,
 } from "../lib/icons";
-import ThemeToggle from "./ThemeToggle";
+
 
 const sideItems: SidebarItem[] = [
 	{
@@ -67,9 +67,6 @@ export const Sidebar = () => {
 					);
 				})}
 			</ul>
-			<div className=" mt-auto pb-4">
-				<ThemeToggle />
-			</div>
 		</aside>
 	);
 };

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { links } from "@/db/schema";
+import { links,tags} from "@/db/schema";
 
 async function getPageData(url: string) {
 	const res = await fetch(url);
@@ -49,3 +49,20 @@ export const toggleFavorite = createServerFn({ method: "POST" })
 			.set({ isFavorite: !data.isFavorite })
 			.where(eq(links.id, data.id));
 	});
+
+export const addTags = createServerFn({method: "POST"})
+	.inputValidator((data : {tag:string}) => data)
+	.handler(async ({data}) => {
+		const [newTag] = await db
+			.insert(tags)
+			.values({
+				name : data.tag,
+				slug: data.tag.toLowerCase().replace(/\s+/g, '-')
+			}).returning()
+		return newTag
+	})
+
+export const showTags = createServerFn({method: "GET"})
+	.handler( async() => {
+		return await db.select().from(tags)
+	})
