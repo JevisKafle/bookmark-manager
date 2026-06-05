@@ -1,10 +1,9 @@
 import { useBookmarks } from "@/hooks/useBookmark";
-import { BookmarkCard } from "../../components/BookmarkCard";
+import { BookmarkCard } from "./BookmarkCard";
 
 export function AllBookmarks() {
-	const { data: bookmarks, isLoading } = useBookmarks();
+	const { data: bookmarks } = useBookmarks();
 
-	if (isLoading) return <div className="p-6 text-zinc-500">Loading...</div>;
 	if (!bookmarks?.length)
 		return <div className="p-6 text-black">No bookmarks yet.</div>;
 

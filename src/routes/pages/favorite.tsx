@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BookmarkCard } from "@/components/BookmarkCard"
 import { useBookmarks } from "@/hooks/useBookmark";
+import { getBookmark } from "@/lib/actions/bookmark"
 
 export const Route = createFileRoute("/pages/favorite")({
+  loader: () => getBookmark({ data: { favoriteOnly: true } }),
 	component: RouteComponent,
 });
 
