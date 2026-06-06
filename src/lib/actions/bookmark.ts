@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
-import { desc, eq, and } from "drizzle-orm";
+import { desc, eq, and,gte } from "drizzle-orm";
 import { db } from "@/db";
 import { links, tags, link_tags } from "@/db/schema";
+
 
 async function getPageData(url: string) {
   const res = await fetch(url);
@@ -57,8 +58,18 @@ export const addBookmark = createServerFn({ method: "POST" })
   });
 
 export const getBookmark = createServerFn({ method: "GET" })
-  .inputValidator((data: { favoriteOnly?: boolean }) => data)
+  .inputValidator((data: { favoriteOnly?: boolean; recentOnly?: boolean }) => data)
   .handler(async ({ data }) => {
+    let whereClause = undefined;
+
+    if (data.favoriteOnly) {
+      whereClause = eq(links.isFavorite, true);
+    } else if (data.recentOnly) {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      whereClause = gte(links.createdAt, sevenDaysAgo);
+    }
+
     const rows = await db
       .select({
         id: links.id,
@@ -73,7 +84,7 @@ export const getBookmark = createServerFn({ method: "GET" })
       .from(links)
       .leftJoin(link_tags, eq(link_tags.link_id, links.id))
       .leftJoin(tags, eq(tags.id, link_tags.tag_id))
-      .where(data.favoriteOnly ? eq(links.isFavorite, true) : undefined)
+      .where(whereClause)
       .orderBy(desc(links.createdAt));
 
     const bookmarkMap = new Map<number, any>();
@@ -138,11 +149,11 @@ export const removeTagFromBookmark = createServerFn({ method: "POST" })
       );
   });
 
-export const deleteTag = createServerFn({method: "POST"})
-  .inputValidator((data: {name: string}) => data)
-  .handler( async({data}) => {
-    const [tag] = await db.select().from(tags).where(eq(tags.name,data.name))
+export const deleteTag = createServerFn({ method: "POST" })
+  .inputValidator((data: { name: string }) => data)
+  .handler(async ({ data }) => {
+    const [tag] = await db.select().from(tags).where(eq(tags.name, data.name));
 
-    if(!tag) return
-    await db.delete(tags).where(eq(tags.id,tag.id))
-  })
+    if (!tag) return;
+    await db.delete(tags).where(eq(tags.id, tag.id));
+  });
