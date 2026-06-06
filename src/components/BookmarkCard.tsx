@@ -1,6 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { toggleFavorite, deleteBookmark } from "@/lib/actions/bookmark";
+import {
+  toggleFavorite,
+  deleteBookmark,
+  removeTagFromBookmark,
+} from "@/lib/actions/bookmark";
 import type { BookmarkCardProps } from "../../type";
 import { StarBorderIcon, StarIcon } from "./../lib/icons";
 import {
@@ -70,18 +74,38 @@ export const BookmarkCard = ({
 
           <div className="flex flex-col gap-1.5 p-3">
             <div className="flex items-center gap-1.5">
-              <img src={favicon_url} alt="" className="w-4 h-4 rounded-sm shrink-0" />
+              <img
+                src={favicon_url}
+                alt=""
+                className="w-4 h-4 rounded-sm shrink-0"
+              />
               <h3 className="text-white">{title}</h3>
             </div>
             <div className="text-zinc-500 text-sm">{domain}</div>
-            <p className="truncate text-zinc-500 leading-tight text-sm">{description}</p>
+            <p className="line-clamp-2 text-zinc-500 leading-tight text-sm truncate">
+              {description}
+            </p>
             <div>
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 rounded text-[10px] bg-white/5 text-zinc-400 border border-white/5 mx-0.5"
+                  className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-white/5 text-zinc-400 border border-white/5 w-fit"
                 >
                   {tag}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await removeTagFromBookmark({
+                        data: { linkId: id, tagName: tag },
+                      });
+                      queryClient.invalidateQueries({
+                        queryKey: ["bookmarks"],
+                      });
+                    }}
+                    className="opacity-0 hover:opacity-100 text-zinc-600 hover:text-red-400 transition-all cursor-pointer leading-none [span:hover_&]:opacity-100"
+                  >
+                    ×
+                  </button>
                 </span>
               ))}
             </div>

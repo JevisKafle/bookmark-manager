@@ -11,6 +11,8 @@ export const Route = createFileRoute("/pages/favorite")({
 function RouteComponent() {
 	const { data: bookmarks, isLoading } = useBookmarks({ favoriteOnly: true });
 
+    
+
 	if (isLoading) return <div className="p-6 text-zinc-500">Loading...</div>;
 	if (!bookmarks?.length)
 		return <div className="p-6 text-black">No Favorites yet.</div>;
@@ -28,7 +30,7 @@ function RouteComponent() {
 						domain={new URL(bookmark.url).hostname}
 						description={bookmark.description ?? ""}
 						favicon_url={bookmark.favicon_url ?? ""}
-						tags={[]}
+						tags={bookmark.tags ?? []}
 						isFavorite={bookmark.isFavorite}
 					/>
 				))}

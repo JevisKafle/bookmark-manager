@@ -13,7 +13,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addBookmark, addTags, showTags } from "@/lib/actions/bookmark";
+import {
+  addBookmark,
+  addTags,
+  showTags,
+  deleteTag,
+} from "@/lib/actions/bookmark";
 
 export function AddLinkModal() {
   const [url, setUrl] = useState("");
@@ -90,20 +95,36 @@ export function AddLinkModal() {
             <Label className="text-xs uppercase tracking-wider">
               Categories
             </Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1">
               {allTags.map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => toggleTag(tag)}
-                  className={`px-3 py-1 rounded-full text-sm border transition cursor-pointer ${
-                    selectedTags.includes(tag)
-                      ? "bg-[hsl(239,84%,67%)] border-[hsl(239,84%,67%)] text-white"
-                      : "bg-transparent border-zinc-600 text-zinc-300 hover:border-zinc-400"
-                  }`}
-                >
-                  {tag}
-                </button>
+                <div key={tag} className="flex items-center gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => toggleTag(tag)}
+                    className={`px-3 py-1 rounded-l-full text-sm border-y border-l transition cursor-pointer ${
+                      selectedTags.includes(tag)
+                        ? "bg-[hsl(239,84%,67%)] border-[hsl(239,84%,67%)] text-white"
+                        : "bg-transparent border-zinc-600 text-zinc-300 hover:border-zinc-400"
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await deleteTag({ data: { name: tag } });
+                      setAllTags((prev) => prev.filter((t) => t !== tag));
+                      setSelectedTags((prev) => prev.filter((t) => t !== tag));
+                    }}
+                    className={` -ml-px px-2 py-1 rounded-r-full text-sm border-y border-r transition cursor-pointer  ${
+                      selectedTags.includes(tag)
+                        ? "bg-[hsl(239,84%,67%)] border-[hsl(239,84%,67%)] text-white hover:text-red-300"
+                        : "border-zinc-600 text-zinc-500 hover:text-red-400"
+                    }`}
+                  >
+                    ×
+                  </button>
+                </div>
               ))}
 
               {showNewTag ? (

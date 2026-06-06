@@ -1,51 +1,62 @@
 import { createServerFn } from "@tanstack/react-start";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, and } from "drizzle-orm";
 import { db } from "@/db";
-import { links,tags,link_tags} from "@/db/schema";
+import { links, tags, link_tags } from "@/db/schema";
 
 async function getPageData(url: string) {
-	const res = await fetch(url);
-	const html = await res.text();
+  const res = await fetch(url);
+  const html = await res.text();
 
-	const title = html.match(/<title>(.*?)<\title>/i)?.[1] ?? url;
-	const description =
-		html.match(/<meta name="description" content="(.*?)"/i)?.[1] ?? "";
-	const favicon_url = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`;
+  const title =
+    html.match(/<title[^>]*>(.*?)<\/title>/i)?.[1] ??
+    html.match(/<meta property="og:title" content="(.*?)"/i)?.[1] ??
+    new URL(url).hostname;
+  const description =
+    html.match(/<meta name="description" content="(.*?)"/i)?.[1] ?? "";
+  const favicon_url = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`;
 
-	return { title, description, favicon_url };
+  return { title, description, favicon_url };
 }
 
-export const addBookmark = createServerFn({ method: 'POST' })
+export const addBookmark = createServerFn({ method: "POST" })
   .inputValidator((data: { url: string; tags: string[] }) => data)
   .handler(async ({ data }) => {
-    const meta = await getPageData(data.url)
+    const meta = await getPageData(data.url);
 
-    const [newLink] = await db.insert(links).values({
-      url: data.url,
-      title: meta.title,
-      description: meta.description,
-      favicon_url: meta.favicon_url,
-    }).returning()
-
+    const [newLink] = await db
+      .insert(links)
+      .values({
+        url: data.url,
+        title: meta.title,
+        description: meta.description,
+        favicon_url: meta.favicon_url,
+      })
+      .returning();
 
     if (data.tags.length > 0) {
       for (const tagName of data.tags) {
-        const [tag] = await db.select().from(tags).where(eq(tags.name, tagName))
-        if (tag) {
-          await db.insert(link_tags).values({
-            link_id: newLink.id,
-            tag_id: tag.id,
-          })
+        let [tag] = await db.select().from(tags).where(eq(tags.name, tagName));
+        if (!tag) {
+          const [newTag] = await db
+            .insert(tags)
+            .values({
+              name: tagName,
+              slug: tagName.toLowerCase().replace(/\s+/g, "-"),
+            })
+            .returning();
+          tag = newTag;
         }
+        await db.insert(link_tags).values({
+          link_id: newLink.id,
+          tag_id: tag.id,
+        });
       }
     }
 
-    return newLink
-  })
+    return newLink;
+  });
 
-
-
-export const getBookmark = createServerFn({ method: 'GET' })
+export const getBookmark = createServerFn({ method: "GET" })
   .inputValidator((data: { favoriteOnly?: boolean }) => data)
   .handler(async ({ data }) => {
     const rows = await db
@@ -63,57 +74,75 @@ export const getBookmark = createServerFn({ method: 'GET' })
       .leftJoin(link_tags, eq(link_tags.link_id, links.id))
       .leftJoin(tags, eq(tags.id, link_tags.tag_id))
       .where(data.favoriteOnly ? eq(links.isFavorite, true) : undefined)
-      .orderBy(desc(links.createdAt))
+      .orderBy(desc(links.createdAt));
 
-
-    const bookmarkMap = new Map<number, any>()
+    const bookmarkMap = new Map<number, any>();
     for (const row of rows) {
       if (!bookmarkMap.has(row.id)) {
-        bookmarkMap.set(row.id, { ...row, tags: [] })
+        bookmarkMap.set(row.id, { ...row, tags: [] });
       }
       if (row.tagName) {
-        bookmarkMap.get(row.id).tags.push(row.tagName)
+        bookmarkMap.get(row.id).tags.push(row.tagName);
       }
     }
 
-    return Array.from(bookmarkMap.values())
-  })
-
+    return Array.from(bookmarkMap.values());
+  });
 
 export const toggleFavorite = createServerFn({ method: "POST" })
-	.inputValidator((data: { id: number; isFavorite: boolean }) => data)
-	.handler(async ({ data }) => {
-		await db
-			.update(links)
-			.set({ isFavorite: !data.isFavorite })
-			.where(eq(links.id, data.id));
-	});
+  .inputValidator((data: { id: number; isFavorite: boolean }) => data)
+  .handler(async ({ data }) => {
+    await db
+      .update(links)
+      .set({ isFavorite: !data.isFavorite })
+      .where(eq(links.id, data.id));
+  });
 
+export const addTags = createServerFn({ method: "POST" })
+  .inputValidator((data: { tag: string }) => data)
+  .handler(async ({ data }) => {
+    const [newTag] = await db
+      .insert(tags)
+      .values({
+        name: data.tag,
+        slug: data.tag.toLowerCase().replace(/\s+/g, "-"),
+      })
+      .returning();
+    return newTag;
+  });
 
+export const showTags = createServerFn({ method: "GET" }).handler(async () => {
+  return await db.select().from(tags);
+});
 
-export const addTags = createServerFn({method: "POST"})
-	.inputValidator((data : {tag:string}) => data)
-	.handler(async ({data}) => {
-		const [newTag] = await db
-			.insert(tags)
-			.values({
-				name : data.tag,
-				slug: data.tag.toLowerCase().replace(/\s+/g, '-')
-			}).returning()
-		return newTag
-	})
+export const deleteBookmark = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: number }) => data)
+  .handler(async ({ data }) => {
+    await db.delete(links).where(eq(links.id, data.id));
+  });
 
+export const removeTagFromBookmark = createServerFn({ method: "POST" })
+  .inputValidator((data: { linkId: number; tagName: string }) => data)
+  .handler(async ({ data }) => {
+    const [tag] = await db
+      .select()
+      .from(tags)
+      .where(eq(tags.name, data.tagName));
 
+    if (!tag) return;
 
-export const showTags = createServerFn({method: "GET"})
-	.handler( async() => {
-		return await db.select().from(tags)
-	})
+    await db
+      .delete(link_tags)
+      .where(
+        and(eq(link_tags.link_id, data.linkId), eq(link_tags.tag_id, tag.id)),
+      );
+  });
 
-export const deleteBookmark = createServerFn({method: "POST"})
-	.inputValidator((data: {id:number}) => data)
-	.handler( async({data}) => {
-		 await db.delete(links).where(eq(links.id,data.id))
-	})
+export const deleteTag = createServerFn({method: "POST"})
+  .inputValidator((data: {name: string}) => data)
+  .handler( async({data}) => {
+    const [tag] = await db.select().from(tags).where(eq(tags.name,data.name))
 
-
+    if(!tag) return
+    await db.delete(tags).where(eq(tags.id,tag.id))
+  })
