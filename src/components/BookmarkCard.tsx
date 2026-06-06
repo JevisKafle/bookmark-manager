@@ -1,5 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { toggleFavorite, deleteBookmark } from "@/lib/actions/bookmark";
+import type { BookmarkCardProps } from "../../type";
+import { StarBorderIcon, StarIcon } from "./../lib/icons";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -7,9 +10,6 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { toggleFavorite } from "@/lib/actions/bookmark";
-import type { BookmarkCardProps } from "../../type";
-import { StarBorderIcon, StarIcon } from "./../lib/icons";
 
 export const BookmarkCard = ({
   id,
@@ -30,7 +30,11 @@ export const BookmarkCard = ({
     queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
   };
 
-  
+  const handleDelete = async () => {
+    await deleteBookmark({ data: { id } });
+    queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+  };
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -90,7 +94,7 @@ export const BookmarkCard = ({
           {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem variant="destructive" >
+        <ContextMenuItem variant="destructive" onClick={handleDelete}>
           Delete
         </ContextMenuItem>
       </ContextMenuContent>
