@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PagesRecentRouteImport } from './routes/pages/recent'
 import { Route as PagesFavoriteRouteImport } from './routes/pages/favorite'
-import { Route as PagesArchiveRouteImport } from './routes/pages/archive'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,42 +28,33 @@ const PagesFavoriteRoute = PagesFavoriteRouteImport.update({
   path: '/pages/favorite',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PagesArchiveRoute = PagesArchiveRouteImport.update({
-  id: '/pages/archive',
-  path: '/pages/archive',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/pages/archive': typeof PagesArchiveRoute
   '/pages/favorite': typeof PagesFavoriteRoute
   '/pages/recent': typeof PagesRecentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/pages/archive': typeof PagesArchiveRoute
   '/pages/favorite': typeof PagesFavoriteRoute
   '/pages/recent': typeof PagesRecentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/pages/archive': typeof PagesArchiveRoute
   '/pages/favorite': typeof PagesFavoriteRoute
   '/pages/recent': typeof PagesRecentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/pages/archive' | '/pages/favorite' | '/pages/recent'
+  fullPaths: '/' | '/pages/favorite' | '/pages/recent'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/pages/archive' | '/pages/favorite' | '/pages/recent'
-  id: '__root__' | '/' | '/pages/archive' | '/pages/favorite' | '/pages/recent'
+  to: '/' | '/pages/favorite' | '/pages/recent'
+  id: '__root__' | '/' | '/pages/favorite' | '/pages/recent'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PagesArchiveRoute: typeof PagesArchiveRoute
   PagesFavoriteRoute: typeof PagesFavoriteRoute
   PagesRecentRoute: typeof PagesRecentRoute
 }
@@ -92,19 +82,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PagesFavoriteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pages/archive': {
-      id: '/pages/archive'
-      path: '/pages/archive'
-      fullPath: '/pages/archive'
-      preLoaderRoute: typeof PagesArchiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PagesArchiveRoute: PagesArchiveRoute,
   PagesFavoriteRoute: PagesFavoriteRoute,
   PagesRecentRoute: PagesRecentRoute,
 }

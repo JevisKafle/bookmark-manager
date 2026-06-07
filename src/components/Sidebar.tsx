@@ -2,7 +2,6 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import type { SidebarItem } from "../../type";
 import {
 	AccessTimeIcon,
-	ArchiveIcon,
 	BookmarkIcon,
 	StarBorderIcon,
 } from "../lib/icons";
@@ -26,12 +25,6 @@ const sideItems: SidebarItem[] = [
 		label: "Favorites",
 		href: "/pages/favorite",
 		icon: StarBorderIcon,
-	},
-	{
-		id: "4",
-		label: "Archive",
-		href: "/pages/archive",
-		icon: ArchiveIcon,
 	},
 ];
 

@@ -1,19 +1,19 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-  toggleFavorite,
-  deleteBookmark,
-  removeTagFromBookmark,
-} from "@/lib/actions/bookmark";
-import type { BookmarkCardProps } from "../../type";
-import { StarBorderIcon, StarIcon } from "./../lib/icons";
-import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+  deleteBookmark,
+  removeTagFromBookmark,
+  toggleFavorite,
+} from "@/lib/actions/bookmark";
+import type { BookmarkCardProps } from "../../type";
+import { StarBorderIcon, StarIcon } from "./../lib/icons";
 
 export const BookmarkCard = ({
   id,
@@ -22,12 +22,14 @@ export const BookmarkCard = ({
   description,
   favicon_url,
   tags,
+  url,
   isFavorite: initialFavorite,
 }: BookmarkCardProps) => {
   const [isFavorite, setIsFavorite] = useState(initialFavorite);
   const queryClient = useQueryClient();
 
   const handleFavorite = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
     e?.stopPropagation();
     setIsFavorite((prev) => !prev);
     await toggleFavorite({ data: { id, isFavorite } });
@@ -42,7 +44,16 @@ export const BookmarkCard = ({
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
-        <div className="group bg-[#131313] p-2 rounded-xl flex flex-col hover:border-[hsl(239,84%,67%)]/40 hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] transition-all duration-200 cursor-pointer">
+        <a
+          className="group bg-[#131313] p-2 rounded-xl flex flex-col hover:border-[hsl(239,84%,67%)]/40 hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] transition-all duration-200 cursor-pointer"
+          href={url}
+          tabIndex={0}
+          onClick={(e) => {
+            e.preventDefault();
+            window.open(url, "_blank");
+          }}
+          onKeyDown={(e) => e.key === "Enter" && window.open(url, "_blank")}
+        >
           <div className="h-36 bg-[#0d0d0d] relative overflow-hidden">
             <div className="inset-0 absolute bg-linear-to-br from-white/3 to-transparent flex items-center justify-center">
               <img
@@ -94,7 +105,9 @@ export const BookmarkCard = ({
                   {tag}
                   <button
                     type="button"
-                    onClick={async () => {
+                    onClick={async (e) => {
+                      e.preventDefault(); // 👈 add this
+                      e.stopPropagation();
                       await removeTagFromBookmark({
                         data: { linkId: id, tagName: tag },
                       });
@@ -110,7 +123,7 @@ export const BookmarkCard = ({
               ))}
             </div>
           </div>
-        </div>
+        </a>
       </ContextMenuTrigger>
 
       <ContextMenuContent className="w-44">
