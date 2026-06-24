@@ -25,6 +25,7 @@ export const BookmarkCard = ({
   url,
   isFavorite: initialFavorite,
 }: BookmarkCardProps) => {
+
   const [isFavorite, setIsFavorite] = useState(initialFavorite);
   const queryClient = useQueryClient();
 
@@ -54,12 +55,17 @@ export const BookmarkCard = ({
           }}
           onKeyDown={(e) => e.key === "Enter" && window.open(url, "_blank")}
         >
-          <div className="h-36 bg-[#0d0d0d] relative overflow-hidden">
+          <div className="h-28 md:h-36 bg-[#0d0d0d] relative overflow-hidden">
             <div className="inset-0 absolute bg-linear-to-br from-white/3 to-transparent flex items-center justify-center">
               <img
-                src={favicon_url}
-                alt="title"
-                className="w-10 h-10 opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-300"
+                src={favicon_url || `https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+                alt={title ?? "favicon"}
+                onError={(e) => {
+                  const el = e.currentTarget as HTMLImageElement;
+                  el.onerror = null;
+                  el.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                }}
+                className="w-8 h-8 md:w-10 md:h-10 opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-300"
               />
               <div
                 className="absolute inset-0 opacity-[0.04]"
@@ -86,9 +92,14 @@ export const BookmarkCard = ({
           <div className="flex flex-col gap-1.5 p-3">
             <div className="flex items-center gap-1.5">
               <img
-                src={favicon_url}
-                alt=""
-                className="w-4 h-4 rounded-sm shrink-0"
+                src={favicon_url || `https://www.google.com/s2/favicons?domain=${domain}&sz=16`}
+                alt={title ?? "favicon"}
+                onError={(e) => {
+                  const el = e.currentTarget as HTMLImageElement;
+                  el.onerror = null;
+                  el.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=16`;
+                }}
+                className="w-3 h-3 md:w-4 md:h-4 rounded-sm shrink-0"
               />
               <h3 className="text-white">{title}</h3>
             </div>
