@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
-import { desc, eq, and,gte } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
+import { and, desc, eq, gte } from "drizzle-orm";
 import { db } from "@/db";
-import { links, tags, link_tags } from "@/db/schema";
-
+import { link_tags, links, tags } from "@/db/schema";
 
 async function getPageData(url: string) {
   const res = await fetch(url);
@@ -14,7 +14,7 @@ async function getPageData(url: string) {
     new URL(url).hostname;
   const description =
     html.match(/<meta name="description" content="(.*?)"/i)?.[1] ?? "";
-  const favicon_url = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`;
+  const favicon_url = `https://icons.duckduckgo.com/ip3/${new URL(url).hostname}.ico`;
 
   return { title, description, favicon_url };
 }
@@ -57,10 +57,23 @@ export const addBookmark = createServerFn({ method: "POST" })
     return newLink;
   });
 
+type BookmarkRow = {
+  id: number;
+  url: string;
+  title: string;
+  description: string | null;
+  favicon_url: string | null;
+  isFavorite: boolean;
+  createdAt: Date;
+  tags: string[];
+};
+
 export const getBookmark = createServerFn({ method: "GET" })
-  .inputValidator((data: { favoriteOnly?: boolean; recentOnly?: boolean }) => data)
+  .inputValidator(
+    (data: { favoriteOnly?: boolean; recentOnly?: boolean }) => data,
+  )
   .handler(async ({ data }) => {
-    let whereClause = undefined;
+    let whereClause: SQL | undefined;
 
     if (data.favoriteOnly) {
       whereClause = eq(links.isFavorite, true);
@@ -87,16 +100,20 @@ export const getBookmark = createServerFn({ method: "GET" })
       .where(whereClause)
       .orderBy(desc(links.createdAt));
 
-    const bookmarkMap = new Map<number, any>();
+    const bookmarkMap = new Map<number, BookmarkRow>();
     for (const row of rows) {
       if (!bookmarkMap.has(row.id)) {
-        bookmarkMap.set(row.id, { ...row, tags: [] });
+        const { tagName, ...rest } = row;
+        bookmarkMap.set(row.id, { ...rest, tags: [] });
       }
+
       if (row.tagName) {
-        bookmarkMap.get(row.id).tags.push(row.tagName);
+        const bookmark = bookmarkMap.get(row.id);
+        if (bookmark) {
+          bookmark.tags.push(row.tagName);
+        }
       }
     }
-
     return Array.from(bookmarkMap.values());
   });
 
